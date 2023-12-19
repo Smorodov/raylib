@@ -213,14 +213,14 @@
 #define STBIR_MALLOC(size,c) ((void)(c), RL_MALLOC(size))
 #define STBIR_FREE(ptr,c) ((void)(c), RL_FREE(ptr))
 #define STB_IMAGE_RESIZE_IMPLEMENTATION
-#include "external/stb_image_resize2.h"     // Required for: stbir_resize_uint8_linear() [ImageResize()]
+#include "external/stb_image_resize2.h"  // Required for: stbir_resize_uint8_linear() [ImageResize()]
 
 #if defined(SUPPORT_FILEFORMAT_SVG)
-    #define NANOSVG_IMPLEMENTATION          // Expands implementation
-    #include "external/nanosvg.h"
+	#define NANOSVG_IMPLEMENTATION	// Expands implementation
+	#include "external/nanosvg.h"
 
-    #define NANOSVGRAST_IMPLEMENTATION
-    #include "external/nanosvgrast.h"
+	#define NANOSVGRAST_IMPLEMENTATION
+	#include "external/nanosvgrast.h"
 #endif
 
 //----------------------------------------------------------------------------------
@@ -1959,24 +1959,29 @@ void ImageBlurGaussian(Image *image, int blurSize) {
             float avgG = 0.0f;
             float avgB = 0.0f;
             float avgAlpha = 0.0f;
-            int convolutionSize = blurSize;
+            int convolutionSize = blurSize+1;
 
-            for (int i = 0; i < blurSize; i++)
+            for (int i = 0; i < blurSize+1; i++)
             {
                 avgR += pixelsCopy1[row*image->width + i].x;
                 avgG += pixelsCopy1[row*image->width + i].y;
                 avgB += pixelsCopy1[row*image->width + i].z;
                 avgAlpha += pixelsCopy1[row*image->width + i].w;
-			}
+            }
 
-            for (int x = 0; x < image->width; x++)
+            pixelsCopy2[row*image->width].x = avgR/convolutionSize;
+            pixelsCopy2[row*image->width].y = avgG/convolutionSize;
+            pixelsCopy2[row*image->width].z = avgB/convolutionSize;
+            pixelsCopy2[row*image->width].w = avgAlpha/convolutionSize;
+
+            for (int x = 1; x < image->width; x++)
             {
-                if (x-blurSize-1 >= 0)
+                if (x-blurSize >= 0)
                 {
-                    avgR -= pixelsCopy1[row*image->width + x-blurSize-1].x;
-                    avgG -= pixelsCopy1[row*image->width + x-blurSize-1].y;
-                    avgB -= pixelsCopy1[row*image->width + x-blurSize-1].z;
-                    avgAlpha -= pixelsCopy1[row*image->width + x-blurSize-1].w;
+                    avgR -= pixelsCopy1[row*image->width + x-blurSize].x;
+                    avgG -= pixelsCopy1[row*image->width + x-blurSize].y;
+                    avgB -= pixelsCopy1[row*image->width + x-blurSize].z;
+                    avgAlpha -= pixelsCopy1[row*image->width + x-blurSize].w;
                     convolutionSize--;
                 }
 
@@ -1994,7 +1999,7 @@ void ImageBlurGaussian(Image *image, int blurSize) {
                 pixelsCopy2[row*image->width + x].z = avgB/convolutionSize;
                 pixelsCopy2[row*image->width + x].w = avgAlpha/convolutionSize;
             }
-        }
+                }
 
         // Vertical motion blur
         for (int col = 0; col < image->width; col++)
@@ -2003,9 +2008,9 @@ void ImageBlurGaussian(Image *image, int blurSize) {
             float avgG = 0.0f;
             float avgB = 0.0f;
             float avgAlpha = 0.0f;
-            int convolutionSize = blurSize;
+            int convolutionSize = blurSize+1;
 
-            for (int i = 0; i < blurSize; i++)
+            for (int i = 0; i < blurSize+1; i++)
             {
                 avgR += pixelsCopy2[i*image->width + col].x;
                 avgG += pixelsCopy2[i*image->width + col].y;
@@ -2013,14 +2018,19 @@ void ImageBlurGaussian(Image *image, int blurSize) {
                 avgAlpha += pixelsCopy2[i*image->width + col].w;
             }
 
-            for (int y = 0; y < image->height; y++)
+            pixelsCopy1[col].x = (unsigned char) (avgR/convolutionSize);
+            pixelsCopy1[col].y = (unsigned char) (avgG/convolutionSize);
+            pixelsCopy1[col].z = (unsigned char) (avgB/convolutionSize);
+            pixelsCopy1[col].w = (unsigned char) (avgAlpha/convolutionSize);
+
+            for (int y = 1; y < image->height; y++)
             {
-                if (y-blurSize-1 >= 0)
+                if (y-blurSize >= 0)
                 {
-                    avgR -= pixelsCopy2[(y-blurSize-1)*image->width + col].x;
-                    avgG -= pixelsCopy2[(y-blurSize-1)*image->width + col].y;
-                    avgB -= pixelsCopy2[(y-blurSize-1)*image->width + col].z;
-                    avgAlpha -= pixelsCopy2[(y-blurSize-1)*image->width + col].w;
+                    avgR -= pixelsCopy2[(y-blurSize)*image->width + col].x;
+                    avgG -= pixelsCopy2[(y-blurSize)*image->width + col].y;
+                    avgB -= pixelsCopy2[(y-blurSize)*image->width + col].z;
+                    avgAlpha -= pixelsCopy2[(y-blurSize)*image->width + col].w;
                     convolutionSize--;
                 }
                 if (y+blurSize < image->height)
@@ -3696,7 +3706,7 @@ void ImageDraw(Image *dst, Image src, Rectangle srcRec, Rectangle dstRec, Color 
 // Draw text (default font) within an image (destination)
 void ImageDrawText(Image *dst, const char *text, int posX, int posY, int fontSize, Color color)
 {
-#if defined(SUPPORT_MODULE_RTEXT) && defined(SUPPORT_DEFAULT_FONT)
+#if defined(SUPPORT_MODULE_RTEXT)
     // Make sure default font is loaded to be used on image text drawing
     if (GetFontDefault().texture.id == 0) LoadFontDefault();
 

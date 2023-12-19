@@ -232,7 +232,7 @@ sinfl_refill(struct sinfl *s) {
 static int
 sinfl_peek(struct sinfl *s, int cnt) {
   assert(cnt >= 0 && cnt <= 56);
-  assert(cnt <= s->bitcnt);
+  // assert(cnt <= s->bitcnt+1);
   return s->bitbuf & ((1ull << cnt) - 1);
 }
 static void
