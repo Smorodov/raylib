@@ -566,18 +566,20 @@ Font LoadFontFromMemory(const char *fileType, const unsigned char *fileData, int
         font.glyphPadding = 0;
         if(codepoints==NULL)
         {
-        int* cpts=malloc(65536*4);
-        int N = 0;
-        ScanCpts(fileData,dataSize,&cpts,&N);    
-        font.glyphCount= N;
-        font.glyphs = LoadFontData(fileData, dataSize, font.baseSize, cpts, font.glyphCount, FONT_DEFAULT);
-        free(cpts);
-        }else
-        {
-        font.glyphCount = (codepointCount > 0)? codepointCount : 95;        
-        font.glyphs = LoadFontData(fileData, dataSize, font.baseSize, codepoints, font.glyphCount, FONT_DEFAULT);
+            if (TextIsEqual(fileExtLower, ".ttf"))
+            {
+                int* cpts=malloc(65536*4);
+                int N = 0;
+                ScanCpts(fileData,dataSize,&cpts,&N);    
+                font.glyphCount= N;
+                font.glyphs = LoadFontData(fileData, dataSize, font.baseSize, cpts, font.glyphCount, FONT_DEFAULT);
+                free(cpts);
+                }else
+                {
+                font.glyphCount = (codepointCount > 0)? codepointCount : 95;        
+                font.glyphs = LoadFontData(fileData, dataSize, font.baseSize, codepoints, font.glyphCount, FONT_DEFAULT);
+                }
         }
-
         if (font.glyphs != NULL)
         {
             font.glyphPadding = FONT_TTF_DEFAULT_CHARS_PADDING;
