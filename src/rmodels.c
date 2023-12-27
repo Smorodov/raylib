@@ -1006,17 +1006,17 @@ void DrawGrid(int slices, float spacing)
         {
             if (i == 0)
             {
-                rlColor3f(0.5f, 0.5f, 0.5f);
-                rlColor3f(0.5f, 0.5f, 0.5f);
-                rlColor3f(0.5f, 0.5f, 0.5f);
-                rlColor3f(0.5f, 0.5f, 0.5f);
+                rlColor3f(0.2f, 0.2f, 0.2f);
+                rlColor3f(0.2f, 0.2f, 0.2f);
+                rlColor3f(0.2f, 0.2f, 0.2f);
+                rlColor3f(0.2f, 0.2f, 0.2f);
             }
             else
             {
-                rlColor3f(0.75f, 0.75f, 0.75f);
-                rlColor3f(0.75f, 0.75f, 0.75f);
-                rlColor3f(0.75f, 0.75f, 0.75f);
-                rlColor3f(0.75f, 0.75f, 0.75f);
+                rlColor3f(0.5f, 0.5f, 0.5f);
+                rlColor3f(0.5f, 0.5f, 0.5f);
+                rlColor3f(0.5f, 0.5f, 0.5f);
+                rlColor3f(0.5f, 0.5f, 0.5f);
             }
 
             rlVertex3f((float)i*spacing, 0.0f, (float)-halfSlices*spacing);
